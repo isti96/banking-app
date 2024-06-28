@@ -1,37 +1,38 @@
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import React from "react";
 import "./App.css";
-import "@shoelace-style/shoelace/dist/themes/light.css";
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path";
-import Button from "./Sl-button";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import MainPage from "./lib/pages/MainPage.jsx";
+import Login from "./lib/pages/Login.jsx";
+import Register from "./lib/pages/Register.jsx";
 
 setBasePath(
   "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.13.1/cdn/"
 );
 
-function App() {
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React + isti</h1>
-      <Button></Button>
-      <div className="card">
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  );
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.router = createBrowserRouter([
+      {
+        path: "/login",
+        element: <Login />,
+      },
+      {
+        path: "/",
+        element: <MainPage />,
+      },
+      {
+        path: "/register",
+        element: <Register />,
+      },
+    ]);
+  }
+
+  render() {
+    return <RouterProvider router={this.router} />;
+  }
 }
 
 export default App;

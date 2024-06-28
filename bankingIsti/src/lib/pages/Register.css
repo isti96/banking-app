@@ -1,0 +1,34 @@
+.label {
+  margin: 15px;
+}
+
+.register {
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.labels {
+  width: 350px;
+}
+
+.label-control {
+  margin-bottom: 10px;
+  display: flex;
+  height: 30px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.message {
+  color: lightskyblue;
+  margin-bottom: 20px;
+}

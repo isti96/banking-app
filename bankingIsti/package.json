@@ -7,12 +7,25 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "node server.js",
+    "nodemon": "nodemon backend/server.js"
   },
   "dependencies": {
+    "@canvasjs/charts": "^3.7.44",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.15.13",
+    "@mui/x-charts": "^6.19.5",
     "@shoelace-style/shoelace": "^2.13.1",
+    "axios": "^1.6.7",
+    "cors": "^2.8.5",
+    "express": "^4.18.3",
+    "mongoose": "^8.2.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-charts": "^3.0.0-beta.57",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
@@ -22,6 +35,8 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "nodemon": "^3.1.0",
+    "tailwindcss": "^3.4.1",
     "vite": "^5.0.8"
   }
 }
