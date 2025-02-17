@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-require("dotenv").config();
+import "dotenv/config";
 
 const app = express();
 const databaseUrl = process.env.MONGOD_CONNECT_URI;
@@ -10,8 +10,8 @@ const PORT = process.env.PORT || 8000;
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use("/api/items", () => {});
-app.use('/proxy', (req, res) => {
-  res.json({ message: 'Proxy is working!' });
+app.use("/proxy", (req, res) => {
+  res.json({ message: "Proxy is working!" });
 });
 
 mongoose
