@@ -1,0 +1,61 @@
+.calendar {
+  color: black;
+}
+
+.card {
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  margin: 10px;
+  padding: 10px;
+  width: auto;
+  height: auto;
+  min-height: 300px;
+  overflow: visible !important;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.pickers {
+  display: flex;
+  flex-direction: column;
+}
+
+.picker {
+  margin: 5px;
+}
+
+.balanceAmount {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 5px;
+}
+
+.balanceInfo {
+  display: flex;
+  justify-content: center;
+}
+
+.account-number {
+  font-size: 1.2em;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+}
+
+.accounts {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.transactionsButton {
+  margin: 5px;
+}

@@ -1,421 +1,209 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "../../App.css";
+import "./MainPage.css";
 import NordigenClient from "../index.js";
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path";
 import axios from "axios";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CanvasJS from "@canvasjs/charts";
-import { withRouter } from "../withRouter";
+import { useNavigate } from "react-router-dom";
+import moment from "moment/moment.js";
+import { UserContext } from "../api/userContext.jsx";
+import { useContext } from "react";
 
 setBasePath(
   "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.13.1/cdn/"
 );
 
-class MainPage extends React.Component {
-  constructor(props) {
-    super(props);
-    this.goToRoute = this.goToRoute.bind(this);
+const MainPage = () => {
+  const navigate = useNavigate();
+  const { user, logout } = useContext(UserContext);
 
-    this.state = {
-      institutions: [],
-      selectedBank: "",
-      selectedCountry: { code: null, name: "Select a country" },
-      bankConnections: [],
-      accounts: [],
-      items: {},
-      balances: [],
-      transactions: [],
-      showBalance: false,
-      showTransactions: false,
-      selectedAccount: "",
-      listOfTotalAmounts: [],
-      chartData: [],
-      chart: [],
-      activeConnections: [],
-    };
-    this.showBalanceMethod = this.showBalanceMethod.bind(this);
+  const [institutions, setInstitutions] = useState([]);
+  const [selectedBank, setSelectedBank] = useState("");
+  const [selectedBankObject, setSelectedBankObject] = useState({
+    id: "",
+    name: "",
+  });
+  const [selectedCountry, setSelectedCountry] = useState({
+    code: null,
+    name: "Select a country",
+  });
+  const [bankConnections, setBankConnections] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-    this.client = new NordigenClient({
-      secretId: "0bdfe1c7-25c6-4433-a685-57a58f01f52e",
-      secretkey:
-        "3a43e9946adf064310d0bb5cd6ff91907d792b7c04e1076ec2222bd68a7058d989ae8495e5c5f11086001b0c0af19434d0979c5fa2afd7ecc7c815836b76ce9b",
-    });
+  const client = NordigenClient();
 
-    this.countries = [
-      { code: "AT", name: "Austria" },
-      { code: "BE", name: "Belgium" },
-      { code: "BG", name: "Bulgaria" },
-      { code: "RO", name: "Romania" },
-    ];
-  }
+  const countries = [
+    { code: "AT", name: "Austria" },
+    { code: "BE", name: "Belgium" },
+    { code: "BG", name: "Bulgaria" },
+    { code: "RO", name: "Romania" },
+  ];
+  //   // Fetch bank connections on mount
+  useEffect(() => {
+    const fetchBankConnections = async () => {
+      try {
+        await client.generateToken();
+        const { data } = await axios.get(
+          "http://localhost:8000/getBankConnections",
+          {
+            params: {
+              userId: user._id,
+            },
+          }
+        );
 
-  goToRoute(route) {
-    this.props.navigate(route);
-  }
+        if (data.length > 0) {
+          setBankConnections(data);
 
-  async componentDidMount() {
-    await this.client.generateToken();
-    await axios.get("http://localhost:8000/getBankConnections").then((res) => {
-      if (res.data.length > 0) {
-        this.setState({ bankConnections: res.data }, async () => {
-          let accountsList = [];
-          this.state.bankConnections.forEach(async (bankConnection) => {
-            const requisition =
-              await this.client.requisition.getRequisitionById(
-                bankConnection.requisitionId
-              );
-            console.log(requisition);
-            if (requisition.status == "LN") {
-              axios
-                .post("http://localhost:8000/updateReq", {
-                  requisitionId: requisition.id,
-                  status: requisition.status,
-                  bankId: requisition.institution_id,
-                  created: requisition.created,
-                })
-                .catch((err) => console.log(err));
+          for (const bankConnection of data) {
+            const requisition = await client.requisition.getRequisitionById(
+              bankConnection.requisitionId
+            );
 
-              accountsList.push({
-                bankName: requisition.institution_id,
-                accounts: requisition.accounts,
+            if (requisition.status === "LN") {
+              await axios.post("http://localhost:8000/updateReq", {
+                requisitionId: requisition.id,
+                status: requisition.status,
+                bankId: requisition.institution_id,
+                created: requisition.created,
               });
             }
-
-            this.setState({ accounts: accountsList });
-          });
-        });
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching bank connections:", error);
       }
-    });
-  }
+    };
 
-  renderBalance() {
-    if (this.state.showBalance) {
-      return this.state.balances.map((balance) => {
-        return (
-          <div>
-            {balance.bankName}
-            {this.seeBalance(balance.amounts)}
-          </div>
-        );
-      });
+    fetchBankConnections();
+  }, []);
+
+  const handleChangeCountry = async (e) => {
+    const selected = countries.find((c) => c.code === e.target.value);
+    setSelectedCountry({ code: selected.code, name: selected.name });
+    if (selected && selected.code) {
+      const institutionsData = await client.institution.getInstitutions(
+        selected.code
+      );
+      setInstitutions(institutionsData);
     }
-  }
+  };
 
-  handleSelectAccount(e) {
-    this.setState({ selectedAccount: e });
-  }
-
-  seeBalance(amounts) {
-    return (
-      <div>
-        {amounts.map((amount) => {
-          return (
-            <div>
-              <div>
-                <Card variant="outlined">
-                  {" "}
-                  <React.Fragment>
-                    <CardContent>
-                      {amount.amount} {amount.currency}{" "}
-                      <button
-                        onClick={async () => {
-                          await this.getTransactions(amount.accountId);
-                          this.handleSelectAccount(amount.accountId);
-                        }}
-                      >
-                        see transactions
-                      </button>
-                      {this.state.transactions.map((transaction) => {
-                        if (this.state.selectedAccount == amount.accountId)
-                          return (
-                            <div>
-                              {transaction.creditorName} -{" "}
-                              {transaction.transactionAmount.amount}{" "}
-                              {transaction.transactionAmount.currency}
-                            </div>
-                          );
-                      })}
-                    </CardContent>
-                  </React.Fragment>
-                </Card>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+  const handleChangeBank = (e) => {
+    const selected = institutions.find(
+      (institution) => institution.id === e.target.value
     );
-  }
+    setSelectedBank(e.target.value);
+    setSelectedBankObject(selected || { id: "", name: "" });
+  };
 
-  showBalanceMethod() {
-    this.setState({ showBalance: true });
-  }
+  const getConnection = async () => {
+    if (!selectedBank) return;
 
-  renderTransactions() {
-    if (this.state.showTransactions) {
-      return;
-    }
-  }
-
-  async getInstitutions(country) {
-    const institutions = await this.client.institution.getInstitutions(country);
-    this.setState({ institutions: institutions });
-  }
-
-  handleChangeCountry(e) {
-    this.setState({ selectedCountry: e.target.value }, async () => {
-      this.setState({ selectedBank: "" });
-      if (this.state.selectedCountry != "Select a country") {
-        await this.getInstitutions(this.state.selectedCountry);
-      } else {
-        this.setState({ institutions: [] });
-      }
-    });
-  }
-
-  handleChangeBank(e) {
-    this.setState({ selectedBank: e.target.value });
-  }
-
-  async getConnection() {
-    const agreement = await this.client.agreement.createAgreement({
-      institutionId: this.state.selectedBank,
+    const agreement = await client.agreement.createAgreement({
+      institutionId: selectedBank,
     });
 
-    const requisition = await this.client.requisition.createRequisition({
+    const requisition = await client.requisition.createRequisition({
       redirectUrl: "http://localhost:5173",
-      institutionId: this.state.selectedBank,
+      institutionId: selectedBank,
       agreement: agreement.id,
     });
 
-    this.setState({ requisitionId: requisition.id }, async () => {
-      axios.post(`http://localhost:8000/reqid`, {
-        bankId: this.state.selectedBank,
-        requisitionId: requisition.id,
-        status: requisition.status,
-        created: requisition.created,
-      });
+    await axios.post("http://localhost:8000/reqid", {
+      bankId: selectedBank,
+      bankName: selectedBankObject.name,
+      requisitionId: requisition.id,
+      status: requisition.status,
+      created: requisition.created,
+      userId: user._id,
     });
-    window.open(requisition.link, "_blank");
-  }
 
-  async getChartData() {
-    let listOfTotalAmounts = [];
-    this.state.balances.map((x) =>
-      x.amounts.map((x) => {
-        if (x.currency == "RON") listOfTotalAmounts.push(x.amount);
-      })
-    );
-    let chartdata = [];
-    await this.setState(
-      {
-        listOfTotalAmounts: listOfTotalAmounts,
-      },
-      () => {
-        chartdata = this.state.listOfTotalAmounts.map((x) => {
-          return {
-            y: Number(x),
-            label: "RON",
-          };
-        });
-      }
-    );
-    await this.setState({ chartData: chartdata });
+    window.open(requisition.link, "_self");
+  };
 
-    this.setState(
-      {
-        chart: new CanvasJS.Chart("chartContainer", {
-          animationEnabled: true,
-          zoomEnabled: true,
-          theme: "dark2",
-          title: {
-            text: "Money management",
-          },
-          axisX: {
-            title: "Currency",
-            valueFormatString: "####",
-            interval: 1,
-          },
-          axisY: {
-            logarithmic: true,
-            logarithmBase: 5,
-            title: "Amount of money logarithmic",
-            titleFontColor: "#6D78AD",
-            lineColor: "#6D78AD",
-            gridThickness: 0,
-            lineThickness: 1,
-          },
-          axisY2: {
-            title: "Amount of money linear",
-            titleFontColor: "#51CDA0",
-            logarithmic: false,
-            lineColor: "#51CDA0",
-            gridThickness: 0,
-            lineThickness: 1,
-          },
-          legend: {
-            verticalAlign: "top",
-            fontSize: 16,
-            dockInsidePlotArea: true,
-          },
-          data: [
-            {
-              type: "stackedColumn",
-              xValueFormatString: "####",
-              showInLegend: true,
-              name: "BT",
-              dataPoints: [this.state.chartData[0]],
-            },
-            {
-              type: "stackedColumn",
-              xValueFormatString: "####",
-              showInLegend: true,
-              name: "REVOLUT",
-              dataPoints: [this.state.chartData[1]],
-            },
-          ],
-        }),
-      },
-      () => {
-        this.state.chart.render();
-      }
-    );
-  }
-
-  async fetchAccounts() {
-    let balancesList = [];
-
-    this.state.accounts.forEach(async (bankAccount) => {
-      let amounts = [];
-      bankAccount.accounts.forEach(async (account) => {
-        const accountDetails = this.client.account(account);
-        const balance = await accountDetails.getBalances();
-        amounts.push({
-          accountId: account,
-          amount: balance.balances[0].balanceAmount.amount,
-          currency: balance.balances[0].balanceAmount.currency,
-        });
-      });
-      balancesList.push({
-        bankName: bankAccount.bankName,
-        amounts: amounts,
-      });
+  const deleteConnection = async (id) => {
+    await axios.post("http://localhost:8000/deleteConnection", {
+      requisitionId: id,
     });
-    this.setState({ balances: balancesList });
-  }
-
-  async getTransactions(accountId) {
-    const accountDetails = this.client.account(accountId);
-    const transactions = await accountDetails.getTransactions(
-      "2024-01-02",
-      "2024-03-13",
-      ""
+    setBankConnections((prev) =>
+      prev.filter((conn) => conn.requisitionId !== id)
     );
-    this.setState({ transactions: transactions.transactions.booked });
-  }
+  };
 
-  renderInstitutions() {
-    if (this.state.selectedCountry != "Select a country") {
-      return this.state.institutions.map((item) => {
-        return (
-          <option key={item.id} value={item.id}>
-            {item.name}
-          </option>
-        );
-      });
-    }
-  }
+  return (
+    <>
+      <div className="mb-5">
+        <p className="mr-5">Active connections for {user.displayName}:</p>
+        {loading
+          ? "Loading..."
+          : bankConnections.map(
+              (connection) =>
+                connection.status === "LN" && (
+                  <div className="connections" key={connection.bankId}>
+                    <button
+                      className="connection"
+                      onClick={() =>
+                        navigate(`/bank/${connection.requisitionId}`)
+                      }
+                    >
+                      {connection.bankName}
+                    </button>
+                    <p className="connection">
+                      - connected on:{" "}
+                      {moment(connection.created).format("DD/MM/YYYY - HH:mm")}
+                    </p>
+                    <button
+                      onClick={() => deleteConnection(connection.requisitionId)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )
+            )}
+      </div>
 
-  renderBankSelecting() {
-    if (
-      this.state.selectedCountry.name != "Select a country" &&
-      this.state.selectedCountry != "Select a country"
-    ) {
-      return (
+      <div className="flex flex-row mb-5">
+        <p className="mr-5">Select country:</p>
+        <select
+          value={selectedCountry.code || ""}
+          onChange={handleChangeCountry}
+        >
+          <option value="">Select a country</option>
+          {countries.map((country) => (
+            <option value={country.code} key={country.code}>
+              {country.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {selectedCountry.code && (
         <div className="flex flex-row">
           <p className="mr-5">Select a bank: </p>
           <select
             className="w-80"
-            defaultValue={this.state.selectedBank}
-            onChange={(e) => this.handleChangeBank(e)}
+            value={selectedBankObject.id}
+            onChange={handleChangeBank}
           >
-            <option value={""}>Select a bank</option>
-            {this.renderInstitutions()}
+            <option value="">Select a bank</option>
+            {institutions.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.name}
+              </option>
+            ))}
           </select>
         </div>
-      );
-    } else {
-      return <div></div>;
-    }
-  }
+      )}
 
-  renderActiveConnections() {
-    if (this.state.bankConnections.length > 0) {
-      return this.state.bankConnections.map((connection) => {
-        if (connection.status == "LN") {
-          return <p>{connection.bankId}</p>;
-        }
-      });
-    }
-  }
+      <button className="m-5" disabled={!selectedBank} onClick={getConnection}>
+        Connect to Bank
+      </button>
 
-  render() {
-    return (
-      <>
-        <div className=" mb-5">
-          <p className="mr-5">Your active connections:</p>
-          {this.renderActiveConnections()}
-        </div>
+      <div id="chartContainer"></div>
+      <button onClick={() => navigate("/login")}>Log out</button>
+    </>
+  );
+};
 
-        <div className="flex flex-row mb-5">
-          <p className="mr-5">Select country:</p>
-          <select
-            value={this.state.selectedCountry}
-            onChange={(e) => this.handleChangeCountry(e)}
-          >
-            <option value={null}>Select a country</option>
-            {this.countries.map((country) => {
-              return <option value={country.code}>{country.name}</option>;
-            })}
-          </select>
-        </div>
-        {this.renderBankSelecting()}
-        <button
-          className="m-5"
-          disabled={
-            this.state.selectedCountry.name == "Select a country" ||
-            this.state.selectedBank == ""
-          }
-          onClick={() => {
-            this.getConnection();
-          }}
-        >
-          Connect to Bank
-        </button>
-        <div></div>
-        <button onClick={this.showBalanceMethod}>
-          Render account balances
-        </button>
-        <button
-          onClick={() => {
-            this.fetchAccounts();
-          }}
-        >
-          Fetch account balances
-        </button>
-        {this.renderBalance()}
-        <button
-          onClick={() => {
-            this.getChartData();
-          }}
-        >
-          get chart
-        </button>
-        <div id="chartContainer"></div>
-        <button onClick={() => this.goToRoute("/login")}>Log out</button>
-      </>
-    );
-  }
-}
-
-export default withRouter(MainPage);
+export default MainPage;

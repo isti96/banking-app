@@ -1,5 +1,3 @@
-import React from "react";
-
 const filterObject = (obj) => {
   return Object.keys(obj || {}).reduce((acc, key) => {
     if (obj[key]) {

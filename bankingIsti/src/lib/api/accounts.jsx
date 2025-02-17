@@ -1,44 +1,37 @@
-import React from "react";
+const AccountsApi = ({ client, accountId }) => {
+  const endpoint = "accounts";
 
-class AccountApi extends React.Component {
-  constructor({ client, accountId }) {
-    super();
-    this.endpoint = "accounts";
-    this.client = client;
-    this.accountId = accountId;
-  }
+  const get = (path, parameters = {}) => {
+    const url = `${endpoint}/${accountId}/${path}`;
+    return client.request({ endpoint: url, parameters });
+  };
 
-  get(path, parameters = {}) {
-    const url = `${this.endpoint}/${this.accountId}/${path}`;
-    return this.client.request({ endpoint: url, parameters });
-  }
-
-  getMetadata() {
-    return this.client.request({
-      endpoint: `${this.endpoint}/${this.accountId}`,
+  const getMetadata = () => {
+    return client.request({
+      endpoint: `${endpoint}/${accountId}`,
     });
-  }
+  };
 
-  getDetails() {
-    return this.get("details");
-  }
+  const getDetails = () => get("details");
 
-  getBalances() {
-    return this.get("balances");
-  }
+  const getBalances = () => get("balances");
 
-  getTransactions(dateFrom, dateTo, country = "") {
+  const getTransactions = (dateFrom, dateTo, country = "") => {
     const params = {
       date_from: dateFrom,
       date_to: dateTo,
       country: country,
     };
-    return this.get("transactions", params);
-  }
+    return get("transactions", params);
+  };
 
-  render() {
-    return null; // Or you can return any UI component if needed
-  }
-}
+  return {
+    get,
+    getMetadata,
+    getDetails,
+    getBalances,
+    getTransactions,
+  };
+};
 
-export default AccountApi;
+export default AccountsApi;

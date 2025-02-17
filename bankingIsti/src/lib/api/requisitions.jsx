@@ -1,14 +1,9 @@
-import React from "react";
 import { HttpMethod } from "../httpMethod.js";
 
-class RequisitionsApi extends React.Component {
-  constructor({ client }) {
-    super();
-    this.endpoint = "requisitions";
-    this.client = client;
-  }
+const RequisitionsApi = ({ client }) => {
+  const endpoint = "requisitions";
 
-  createRequisition({
+  const createRequisition = ({
     redirectUrl,
     institutionId,
     agreement,
@@ -17,7 +12,7 @@ class RequisitionsApi extends React.Component {
     accountSelection = false,
     reference = null,
     ssn = null,
-  }) {
+  }) => {
     const payload = {
       redirect: redirectUrl,
       institution_id: institutionId,
@@ -29,38 +24,41 @@ class RequisitionsApi extends React.Component {
       ...(reference && { reference: reference }),
     };
 
-    return this.client.request({
-      endpoint: `${this.endpoint}/`,
+    return client.request({
+      endpoint: `${endpoint}/`,
       parameters: payload,
       method: HttpMethod.POST,
     });
-  }
+  };
 
-  getRequisitions({ limit = 100, offset = 0 } = {}) {
+  const getRequisitions = ({ limit = 100, offset = 0 } = {}) => {
     const params = { limit, offset };
-    return this.client.request({
-      endpoint: `${this.endpoint}/`,
+    return client.request({
+      endpoint: `${endpoint}/`,
       method: HttpMethod.GET,
       parameters: params,
     });
-  }
+  };
 
-  getRequisitionById(requisitionId) {
-    return this.client.request({
-      endpoint: `${this.endpoint}/${requisitionId}/`,
+  const getRequisitionById = (requisitionId) => {
+    return client.request({
+      endpoint: `${endpoint}/${requisitionId}/`,
     });
-  }
+  };
 
-  deleteRequisition(requisitionId) {
-    return this.client.request({
-      endpoint: `${this.endpoint}/${requisitionId}/`,
+  const deleteRequisition = (requisitionId) => {
+    return client.request({
+      endpoint: `${endpoint}/${requisitionId}/`,
       method: HttpMethod.DELETE,
     });
-  }
+  };
 
-  render() {
-    return null; // Or you can return any UI component if needed
-  }
-}
+  return {
+    createRequisition,
+    getRequisitions,
+    getRequisitionById,
+    deleteRequisition,
+  };
+};
 
 export default RequisitionsApi;

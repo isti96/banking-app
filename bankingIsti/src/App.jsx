@@ -5,34 +5,33 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import MainPage from "./lib/pages/MainPage.jsx";
 import Login from "./lib/pages/Login.jsx";
 import Register from "./lib/pages/Register.jsx";
+import BankPage from "./lib/pages/BankPage.jsx";
 
 setBasePath(
   "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.13.1/cdn/"
 );
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
+const router = createBrowserRouter([
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/",
+    element: <MainPage />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+  },
+  {
+    path: "/bank/:id",
+    element: <BankPage />,
+  },
+]);
 
-    this.router = createBrowserRouter([
-      {
-        path: "/login",
-        element: <Login />,
-      },
-      {
-        path: "/",
-        element: <MainPage />,
-      },
-      {
-        path: "/register",
-        element: <Register />,
-      },
-    ]);
-  }
-
-  render() {
-    return <RouterProvider router={this.router} />;
-  }
-}
+const App = () => {
+  return <RouterProvider router={router} />;
+};
 
 export default App;

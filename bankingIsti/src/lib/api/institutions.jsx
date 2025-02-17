@@ -1,31 +1,21 @@
-import React from "react";
+const InstitutionsApi = ({ client }) => {
+  const endpoint = "institutions";
 
-class InstitutionApi extends React.Component {
-  constructor(props) {
-    super(props);
-    this.endpoint = "institutions";
-    this.state = {
-      institutions: [],
-    };
-    this.client = props.client;
-  }
-
-  getInstitutions = async (country) => {
+  const getInstitutions = async (country) => {
     try {
-      const response = await this.client.request({
-        endpoint: `${this.endpoint}/?country=${country}`,
+      const response = await client.request({
+        endpoint: `${endpoint}/?country=${country}`,
       });
-      this.setState({ institutions: response });
       return response;
     } catch (error) {
       console.error("Error fetching institutions:", error);
     }
   };
 
-  getInstitutionById = async (id) => {
+  const getInstitutionById = async (id) => {
     try {
-      const response = await this.client.request({
-        endpoint: `${this.endpoint}/${id}/`,
+      const response = await client.request({
+        endpoint: `${endpoint}/${id}/`,
       });
       return response;
     } catch (error) {
@@ -33,14 +23,7 @@ class InstitutionApi extends React.Component {
     }
   };
 
-  render() {
-    const { institutions } = this.state;
-    return (
-      <div>
-        {/* You can render institutions or manipulate the state as needed */}
-      </div>
-    );
-  }
-}
+  return { getInstitutions, getInstitutionById };
+};
 
-export default InstitutionApi;
+export default InstitutionsApi;

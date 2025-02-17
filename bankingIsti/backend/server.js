@@ -19,24 +19,71 @@ mongoose
 const Schema = mongoose.Schema;
 const ItemSchema = new Schema({
   bankId: String,
+  bankName: String,
   requisitionId: String,
   status: String,
+  created: String,
+  userId: mongoose.Schema.Types.ObjectId,
+});
+
+const UserSchema = new Schema({
+  id: String,
+  userName: String,
+  email: String,
+  password: String,
+  displayName: String,
   created: String,
 });
 
 const Item = mongoose.model("Item", ItemSchema);
+const User = mongoose.model("User", UserSchema);
 
-app.get("/getBankConnections", async (req, res) => {
-  const items = await Item.find();
+app.get(`/getBankConnections`, async (req, res) => {
+  const items = await Item.find({ userId: req.query.userId });
   res.json(items);
+});
+
+app.post("/deleteConnection", async (req, res) => {
+  await Item.deleteOne({ requisitionId: req.body.requisitionId });
+  res.json();
+});
+
+app.post("/register", async (req, res) => {
+  let user = await User.findOne({ email: req.body.email });
+  if (user) {
+    return res.status(400).send("User already exists. Please sign in");
+  } else {
+    new User({
+      email: req.body.email,
+      password: req.body.password,
+      displayName: req.body.displayName,
+      created: req.body.created,
+    })
+      .save()
+      .then(() => res.json());
+  }
+});
+
+app.post("/login", async (req, res) => {
+  let user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return res.status(401).send("User not found! Please sign up!");
+  }
+  const isValid = user.password === req.body.password;
+  if (!isValid) {
+    return res.status(400).json("Wrong credentials!");
+  }
+  return res.json(user);
 });
 
 app.post("/reqid", async (req, res) => {
   new Item({
     bankId: req.body.bankId,
+    bankName: req.body.bankName,
     requisitionId: req.body.requisitionId,
     status: req.body.status,
     created: req.body.created,
+    userId: req.body.userId,
   })
     .save()
     .then(() => res.json());

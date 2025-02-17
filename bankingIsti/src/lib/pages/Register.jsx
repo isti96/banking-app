@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "./Register.css";
+import axios from "axios";
 
 setBasePath(
   "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.13.1/cdn/"
@@ -16,6 +17,7 @@ function Register() {
   const [password, setPassword] = useState("");
   const [retypePassword, setRetypePassword] = useState("");
   const [name, setName] = useState("");
+  const [error, setError] = useState("");
 
   function validateForm() {
     return (
@@ -27,8 +29,19 @@ function Register() {
     );
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
+    await axios
+      .post("http://localhost:8000/register", {
+        email: email,
+        password: password,
+        displayName: name,
+        created: new Date().toISOString(),
+      })
+      .then((res) => {
+        navigate("/");
+      })
+      .catch((err) => setError(err.response.data));
   }
 
   return (
@@ -36,6 +49,7 @@ function Register() {
       <div className="register">
         <div className="message">Welcome aboard!</div>
         <Form onSubmit={handleSubmit} className="labels">
+          {error && <div className="error-message">{error}</div>}
           <Form.Group size="lg" controlId="email" className="labels">
             <div className="label-control">
               <Form.Label className="label">Email</Form.Label>
@@ -73,7 +87,7 @@ function Register() {
             <div className="label-control">
               <Form.Label className="label">Re-type Password</Form.Label>
               <Form.Control
-                type="retypepassword"
+                type="password"
                 value={retypePassword}
                 onChange={(e) => setRetypePassword(e.target.value)}
               />
@@ -81,15 +95,10 @@ function Register() {
           </Form.Group>
 
           <div className="buttons">
-            <Button size="lg" type="submit" onClick={() => navigate("/login")}>
+            <Button size="lg" type="button" onClick={() => navigate("/login")}>
               Go back to Login
             </Button>
-            <Button
-              size="lg"
-              type="submit"
-              disabled={!validateForm()}
-              onClick={() => navigate("/")}
-            >
+            <Button size="lg" type="submit" disabled={!validateForm()}>
               Register
             </Button>
           </div>
