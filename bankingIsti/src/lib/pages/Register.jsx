@@ -11,6 +11,8 @@ setBasePath(
   "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.13.1/cdn/"
 );
 
+const BASE_URL = "https://banking-app-6rvo.onrender.com";
+
 function Register() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -32,7 +34,7 @@ function Register() {
   async function handleSubmit(event) {
     event.preventDefault();
     await axios
-      .post("http://localhost:8000/register", {
+      .post(`${BASE_URL}/register`, {
         email: email,
         password: password,
         displayName: name,

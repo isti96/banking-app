@@ -13,6 +13,8 @@ setBasePath(
   "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.13.1/cdn/"
 );
 
+const BASE_URL = "https://banking-app-6rvo.onrender.com";
+
 const MainPage = () => {
   const navigate = useNavigate();
   const { user, logout } = useContext(UserContext);
@@ -43,14 +45,11 @@ const MainPage = () => {
     const fetchBankConnections = async () => {
       try {
         await client.generateToken();
-        const { data } = await axios.get(
-          "http://localhost:8000/getBankConnections",
-          {
-            params: {
-              userId: user._id,
-            },
-          }
-        );
+        const { data } = await axios.get(`${BASE_URL}/getBankConnections`, {
+          params: {
+            userId: user._id,
+          },
+        });
 
         if (data.length > 0) {
           setBankConnections(data);
@@ -61,7 +60,7 @@ const MainPage = () => {
             );
 
             if (requisition.status === "LN") {
-              await axios.post("http://localhost:8000/updateReq", {
+              await axios.post(`${BASE_URL}/updateReq`, {
                 requisitionId: requisition.id,
                 status: requisition.status,
                 bankId: requisition.institution_id,
@@ -110,7 +109,7 @@ const MainPage = () => {
       agreement: agreement.id,
     });
 
-    await axios.post("http://localhost:8000/reqid", {
+    await axios.post(`${BASE_URL}/reqid`, {
       bankId: selectedBank,
       bankName: selectedBankObject.name,
       requisitionId: requisition.id,
@@ -123,7 +122,7 @@ const MainPage = () => {
   };
 
   const deleteConnection = async (id) => {
-    await axios.post("http://localhost:8000/deleteConnection", {
+    await axios.post(`${BASE_URL}/deleteConnection`, {
       requisitionId: id,
     });
     setBankConnections((prev) =>
