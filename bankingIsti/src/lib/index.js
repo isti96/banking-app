@@ -16,7 +16,7 @@ const NordigenClient = () => {
     accept: "application/json",
     "Content-Type": "application/json",
   };
-  const baseUrl = "http://localhost:8010/proxy";
+  const baseUrl = "https://banking-app-6rvo.onrender.com/proxy";
   const endpoint = "token";
 
   // Function to handle requests

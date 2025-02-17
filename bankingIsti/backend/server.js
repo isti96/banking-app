@@ -1,18 +1,27 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
+require("dotenv").config();
 
 const app = express();
+const databaseUrl = process.env.MONGOD_CONNECT_URI;
+const PORT = process.env.PORT || 8000;
 
-app.use(cors());
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use("/api/items", () => {});
+app.use('/proxy', (req, res) => {
+  res.json({ message: 'Proxy is working!' });
+});
 
 mongoose
-  .connect("mongodb://localhost:27017/MyDatabase", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(
+    `mongodb+srv://isti96:${databaseUrl}@cluster0.y5si3nq.mongodb.net/MyDatabase`,
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.log(err));
 
@@ -103,6 +112,6 @@ app.post("/updateReq", async (req, res) => {
   ).then(() => res.json());
 });
 
-app.listen(8000, () => {
-  console.log(`Server is running on port 8000.`);
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}.`);
 });
