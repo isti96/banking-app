@@ -34,7 +34,7 @@ function Login() {
         password: password,
       });
       login(response.data);
-      navigate("/");
+      navigate("/home");
     } catch (error) {
       console.error("Login failed", error);
     }

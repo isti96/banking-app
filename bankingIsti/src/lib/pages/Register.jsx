@@ -41,7 +41,7 @@ function Register() {
         created: new Date().toISOString(),
       })
       .then((res) => {
-        navigate("/");
+        navigate("/home");
       })
       .catch((err) => setError(err.response.data));
   }
