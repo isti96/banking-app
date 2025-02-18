@@ -4,7 +4,7 @@ const InstitutionsApi = ({ client }) => {
   const getInstitutions = async (country) => {
     try {
       const response = await client.request({
-        endpoint: `${endpoint}/?country=${country}`,
+        endpoint: `${endpoint}?country=${country}`,
       });
       return response;
     } catch (error) {
