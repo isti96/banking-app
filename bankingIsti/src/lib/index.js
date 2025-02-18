@@ -6,7 +6,6 @@ import AccountsApi from "./api/accounts.jsx";
 import { HttpMethod } from "./httpMethod.js";
 import filterObject from "./utils.js";
 import { useMemo } from "react";
-import "dotenv/config";
 
 const baseUrl = import.meta.env.VITE_PROXY_API_URL;
 
