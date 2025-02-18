@@ -6,6 +6,7 @@ import AccountsApi from "./api/accounts.jsx";
 import { HttpMethod } from "./httpMethod.js";
 import filterObject from "./utils.js";
 import { useMemo } from "react";
+import "dotenv/config";
 
 const NordigenClient = () => {
   const secretId = "0bdfe1c7-25c6-4433-a685-57a58f01f52e";
@@ -16,7 +17,7 @@ const NordigenClient = () => {
     accept: "application/json",
     "Content-Type": "application/json",
   };
-  const baseUrl = "https://banking-app-6rvo.onrender.com/proxy";
+  const baseUrl = process.env.PROXY_API_URL;
   const endpoint = "token";
 
   // Function to handle requests

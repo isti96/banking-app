@@ -10,9 +10,6 @@ const PORT = process.env.PORT || 8000;
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use("/api/items", () => {});
-app.use("/proxy", (req, res) => {
-  res.json({ message: "Proxy is working!" });
-});
 
 mongoose
   .connect(
