@@ -7,7 +7,15 @@ const app = express();
 const databaseUrl = process.env.MONGOD_CONNECT_URI;
 const PORT = process.env.PORT || 8000;
 
-app.use(cors({ origin: "*" }));
+app.use(
+  cors({
+    origin: "https://banking-app-2.netlify.app",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
+
+app.options("*", cors());
+
 app.use(express.json());
 app.use("/api/items", () => {});
 
