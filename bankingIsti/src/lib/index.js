@@ -8,6 +8,8 @@ import filterObject from "./utils.js";
 import { useMemo } from "react";
 import "dotenv/config";
 
+const baseUrl = process.env.PROXY_API_URL;
+
 const NordigenClient = () => {
   const secretId = "0bdfe1c7-25c6-4433-a685-57a58f01f52e";
   const secretKey =
@@ -17,7 +19,6 @@ const NordigenClient = () => {
     accept: "application/json",
     "Content-Type": "application/json",
   };
-  const baseUrl = process.env.PROXY_API_URL;
   const endpoint = "token";
 
   // Function to handle requests
