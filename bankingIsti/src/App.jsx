@@ -1,7 +1,11 @@
 import React from "react";
 import "./App.css";
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from "react-router-dom";
 import MainPage from "./lib/pages/MainPage.jsx";
 import Login from "./lib/pages/Login.jsx";
 import Register from "./lib/pages/Register.jsx";
@@ -13,11 +17,15 @@ setBasePath(
 
 const router = createBrowserRouter([
   {
+    path: "/",
+    element: <Navigate to="/login" replace />,
+  },
+  {
     path: "/login",
     element: <Login />,
   },
   {
-    path: "/",
+    path: "/home",
     element: <MainPage />,
   },
   {
