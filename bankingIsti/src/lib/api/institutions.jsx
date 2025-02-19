@@ -6,6 +6,11 @@ const InstitutionsApi = ({ client }) => {
       const response = await client.request({
         endpoint: `${endpoint}?country=${country}`,
       });
+      if (!response.ok) {
+        const errorData = await response.json(); // Parse the error response
+        console.error("Error Response:", errorData);
+        return;
+      }
       return response;
     } catch (error) {
       console.error("Error fetching institutions:", error);

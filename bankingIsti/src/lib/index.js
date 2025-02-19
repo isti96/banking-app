@@ -10,9 +10,9 @@ import { useMemo } from "react";
 const baseUrl = import.meta.env.VITE_PROXY_API_URL;
 
 const NordigenClient = () => {
-  const secretId = "0bdfe1c7-25c6-4433-a685-57a58f01f52e";
+  const secretId = "66433513-7aed-4d19-bc80-7c9ac2ca0ba2";
   const secretKey =
-    "3a43e9946adf064310d0bb5cd6ff91907d792b7c04e1076ec2222bd68a7058d989ae8495e5c5f11086001b0c0af19434d0979c5fa2afd7ecc7c815836b76ce9b";
+    "e270957e080f165c9f792106c134ad0706d7c696ded78087acc199ee06fdc364680778124d14efa9cf6521fcf215687d22126755fc160101bc3fe01862826ee9";
   let token = "";
   let headers = {
     accept: "application/json",
@@ -39,7 +39,11 @@ const NordigenClient = () => {
       });
       console.log(headers)
       console.log(url)
-
+      if (!response.ok) {
+        const errorData = await response.json(); // Parse the error response
+        console.error("Error Response:", errorData);
+        return;
+      }
 
       return response.data;
     } catch (error) {
