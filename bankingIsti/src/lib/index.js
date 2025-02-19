@@ -40,7 +40,9 @@ const NordigenClient = () => {
 
       return response.data;
     } catch (error) {
-      console.error("Error in request:", error);
+      console.log("Error in request:", error);
+      console.log(error.response?.data);
+
       throw error;
     }
   };

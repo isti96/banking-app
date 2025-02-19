@@ -19,6 +19,26 @@ app.options("*", cors());
 app.use(express.json());
 app.use("/api/items", () => {});
 
+app.use("/proxy/institutions", async (req, res) => {
+  console.log(req);
+  console.log(res);
+  try {
+    const { country } = req.query;
+
+    if (!country) {
+      return res.status(400).json({ error: "Missing 'country' parameter" });
+    }
+
+    const response = await axios.get(
+      `https://proxy-for-banking-app.onrender.com/proxy/institutions?country=${country}`
+    );
+    console.log(response.data);
+  } catch (error) {
+    console.log("Error fetching institutions:", error.response?.data);
+    console.log(error.message);
+  }
+});
+
 mongoose
   .connect(databaseUrl, {
     useNewUrlParser: true,

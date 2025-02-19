@@ -9,6 +9,7 @@ const InstitutionsApi = ({ client }) => {
       return response;
     } catch (error) {
       console.error("Error fetching institutions:", error);
+      console.log(error)
     }
   };
 
