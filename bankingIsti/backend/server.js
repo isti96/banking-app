@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 8000;
 app.use(
   cors({
     origin: ["https://banking-app-2.netlify.app", "http://localhost:5173"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
   })
 );
 
