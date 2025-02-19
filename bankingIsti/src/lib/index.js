@@ -37,6 +37,9 @@ const NordigenClient = () => {
           ? { data: JSON.stringify(parameters) }
           : {}),
       });
+      console.log(headers)
+      console.log(url)
+
 
       return response.data;
     } catch (error) {
