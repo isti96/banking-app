@@ -4,12 +4,12 @@ import mongoose from "mongoose";
 import "dotenv/config";
 
 const app = express();
-const databaseUrl = process.env.MONGOD_CONNECT_URI;
+const databaseUrl = process.env.REACT_APP_DATABASE_URL;
 const PORT = process.env.PORT || 8000;
 
 app.use(
   cors({
-    origin: "https://banking-app-2.netlify.app",
+    origin: ["https://banking-app-2.netlify.app", "http://localhost:5173"],
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
@@ -20,13 +20,10 @@ app.use(express.json());
 app.use("/api/items", () => {});
 
 mongoose
-  .connect(
-    `mongodb+srv://isti96:${databaseUrl}@cluster0.y5si3nq.mongodb.net/MyDatabase`,
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
-  )
+  .connect(databaseUrl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.log(err));
 

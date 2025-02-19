@@ -13,7 +13,7 @@ setBasePath(
   "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.13.1/cdn/"
 );
 
-const BASE_URL = "https://banking-app-6rvo.onrender.com";
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const MainPage = () => {
   const navigate = useNavigate();
