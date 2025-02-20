@@ -70,7 +70,7 @@ const NordigenClient = () => {
       secret_id: secretId,
     };
     const response = await request({
-      endpoint: `${endpoint}/new/`,
+      endpoint: "gocardless/token",
       parameters: payload,
       method: HttpMethod.POST,
     });

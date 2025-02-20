@@ -4,7 +4,8 @@ const InstitutionsApi = ({ client }) => {
   const getInstitutions = async (country) => {
     try {
       const response = await client.request({
-        endpoint: `${endpoint}?country=${country}`,
+        endpoint: "gocardless/country",
+        parameters: country,
       });
       if (!response.ok) {
         const errorData = await response.json(); // Parse the error response
@@ -14,7 +15,7 @@ const InstitutionsApi = ({ client }) => {
       return response;
     } catch (error) {
       console.error("Error fetching institutions:", error);
-      console.log(error)
+      console.log(error);
     }
   };
 
