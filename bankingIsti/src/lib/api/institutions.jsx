@@ -4,7 +4,7 @@ const InstitutionsApi = ({ client }) => {
   const getInstitutions = async (country) => {
     try {
       const response = await client.request({
-        endpoint: "gocardless/country",
+        endpoint: "country",
         parameters: country,
       });
       if (!response.ok) {
