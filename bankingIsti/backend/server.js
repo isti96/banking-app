@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import "dotenv/config";
+import axios from "axios";
 
 const app = express();
 const databaseUrl = process.env.REACT_APP_DATABASE_URL;
