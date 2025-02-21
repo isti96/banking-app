@@ -7,7 +7,7 @@ import { HttpMethod } from "./httpMethod.js";
 import filterObject from "./utils.js";
 import { useMemo } from "react";
 
-const baseUrl = import.meta.env.VITE_PROXY_API_URL;
+const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 const NordigenClient = () => {
   const secretId = "66433513-7aed-4d19-bc80-7c9ac2ca0ba2";
